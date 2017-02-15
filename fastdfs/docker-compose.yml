@@ -1,0 +1,23 @@
+version: '2'
+
+services:
+  tracker:
+    image: fastdfs
+    ports:
+      - "22122:22122"
+    command: tracker
+    volumes:
+      - tracker-data:/fastdfs/tracker
+  storage:
+    image: fastdfs
+    command: storage
+    ports:
+      - "23000:23000"
+      - "80:80"
+    environment:
+      - FDFS_TRACKER_SERVER=tracker:22122
+    volumes:
+      - storage-data:/fastdfs/storage
+volumes:
+  tracker-data: {}
+  storage-data: {}

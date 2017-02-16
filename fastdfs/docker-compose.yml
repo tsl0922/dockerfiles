@@ -13,11 +13,22 @@ services:
     command: storage
     ports:
       - "23000:23000"
-      - "80:80"
     environment:
       - FDFS_TRACKER_SERVER=tracker:22122
     volumes:
       - storage-data:/fastdfs/storage
+  nginx:
+    image: fastdfs
+    command: nginx
+    ports:
+      - "80:80"
+    environment:
+      - FDFS_TRACKER_SERVER=tracker:22122
+      - NGINX_CACHE_PATH=/fastdfs/nginx_cache
+      - NGINX_RESOLVER=127.0.0.11
+    volumes:
+      - nginx-cache:/fastdfs/nginx_cache
 volumes:
   tracker-data: {}
   storage-data: {}
+  nginx-cache: {}

@@ -3,11 +3,12 @@ LABEL maintainer "Shuanglei Tao - tsl0922@gmail.com"
 
 ENV FDFS_LIB_COMMIT c78f6b17eeb4ba72d84436c8ae9a23ec82beb6a9
 ENV FDFS_COMMIT 5d0d1ef5319c39165b7703b2af89442c3a801eb5
-ENV FDFS_MOD_COMMIT be5fb92634683de745191f5619809f4d3409df14
+ENV FDFS_LUA_COMMIT 7e5eb93d6448d4261d41a5529affec62d30dc27e
 
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
     ca-certificates \
+    graphicsmagick \
     curl \
     git \
     g++ \
@@ -23,16 +24,15 @@ RUN git clone https://github.com/happyfish100/libfastcommon.git /tmp/libfastcomm
   && cd /tmp/libfastcommon && git checkout $FDFS_LIB_COMMIT \
   && ./make.sh && ./make.sh install \
   && git clone https://github.com/happyfish100/fastdfs.git /tmp/fastdfs \
-  && cd /tmp/fastdfs && git checkout $FDFS_COMMIT \
+  && cd /tmp/fastdfs && git checkout -b docker $FDFS_COMMIT \
+  && curl -sLo- https://github.com/happyfish100/fastdfs/pull/96.diff | git apply \
   && ./make.sh && ./make.sh install \
   && cp conf/http.conf /etc/fdfs && cp conf/mime.types /etc/fdfs
 
-RUN git clone https://github.com/happyfish100/fastdfs-nginx-module.git /tmp/fastdfs-nginx-module \
-  && cd /tmp/fastdfs-nginx-module && git checkout $FDFS_MOD_COMMIT && cp src/mod_fastdfs.conf /etc/fdfs \
-  && curl -sLo- https://nginx.org/download/nginx-1.11.10.tar.gz | tar xz -C /tmp \
-  && cd /tmp/nginx-1.11.10 \
+RUN curl -sLo- https://openresty.org/download/openresty-1.11.2.2.tar.gz | tar xz -C /tmp \
+  && cd /tmp/openresty-1.11.2.2 \
   && ./configure \
-    --prefix=/etc/nginx \
+    --prefix=/usr/openresty \
     --sbin-path=/usr/sbin/nginx \
     --conf-path=/etc/nginx/nginx.conf \
     --error-log-path=/var/log/nginx/error.log \
@@ -62,20 +62,23 @@ RUN git clone https://github.com/happyfish100/fastdfs-nginx-module.git /tmp/fast
     --with-threads \
     --with-stream \
     --with-stream_ssl_module \
-    --with-stream_realip_module \
     --with-http_slice_module \
     --with-mail \
     --with-mail_ssl_module \
     --with-file-aio \
     --with-http_v2_module \
     --with-ipv6 \
-    --add-module=../fastdfs-nginx-module/src \
+    --with-pcre-jit \
   && make && make install \
   && adduser --system --no-create-home --shell /bin/false --group --disabled-login nginx \
   && mkdir -p /var/cache/nginx && chown -R nginx:nginx /var/cache/nginx \
-  && mkdir -p /var/log/nginx && chown -R nginx:nginx /var/log/nginx
+  && mkdir -p /var/log/nginx && chown -R nginx:nginx /var/log/nginx \
+  && git clone https://github.com/azurewang/lua-resty-fastdfs.git /tmp/lua-resty-fastdfs \
+  && cd /tmp/lua-resty-fastdfs && git checkout $FDFS_LUA_COMMIT \
+  && cp -r lib/resty/fastdfs /usr/openresty/lualib/resty
 
 COPY ./nginx.conf /etc/nginx/
+COPY ./fastdfs.lua /etc/nginx/
 
 RUN apt-get remove -y --purge \
     git \

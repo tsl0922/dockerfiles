@@ -2,7 +2,7 @@ FROM ubuntu:16.04
 
 # install packages
 RUN apt-get update && apt-get -y upgrade && \
-    apt-get install -y --no-install-recommends software-properties-common ca-certificates curl unzip vim wget && \
+    apt-get install -y --no-install-recommends software-properties-common ca-certificates curl tzdata unzip vim wget && \
     echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | debconf-set-selections && \
     add-apt-repository -y ppa:webupd8team/java && \
     add-apt-repository -y ppa:git-core/ppa && \
@@ -13,8 +13,10 @@ RUN apt-get update && apt-get -y upgrade && \
 
 ENV JAVA_HOME /usr/lib/jvm/java-8-oracle
 
-# configure locale
+# configure timezone/locale
+# https://bugs.launchpad.net/ubuntu/+source/tzdata/+bug/1554806
 RUN echo "Asia/Shanghai" > /etc/timezone && \
+    rm /etc/localtime && \
     dpkg-reconfigure -f noninteractive tzdata && \
     echo 'en_US.UTF-8 UTF-8' >> /etc/locale.gen && locale-gen && \
     dpkg-reconfigure -f noninteractive locales

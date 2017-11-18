@@ -7,7 +7,7 @@ RUN apt-get update && apt-get -y upgrade && \
     add-apt-repository -y ppa:webupd8team/java && \
     add-apt-repository -y ppa:git-core/ppa && \
     apt-get update && \
-    apt-get install -y --no-install-recommends oracle-java8-installer ca-certificates-java git git-svn hg-fast-export && \
+    apt-get install -y --no-install-recommends oracle-java8-installer ca-certificates-java git git-svn hg-fast-export openssh-client && \
     rm -rf /var/lib/apt/lists/* && \
     rm -rf /var/cache/oracle-jdk8-installer
 

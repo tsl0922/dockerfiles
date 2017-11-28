@@ -27,3 +27,14 @@ ENV LANG=en_US.UTF-8 LANGUAGE=en_US:en LC_ALL=en_US.UTF-8
 RUN git config --global pack.windowMemory "256m" && \
     git config --global pack.threads "1" && \
     git config --global pack.packSizeLimit "256m"
+
+# install tini
+ENV TINI_VERSION v0.16.1
+ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-static /tini
+ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-static.asc /tini.asc
+RUN gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 595E85A6B1B4779EA4DAAEC70B588DFF0527A9B7 \
+    && gpg --verify /tini.asc \
+    && chmod +x /tini && mv /tini /sbin/tini \
+    && rm /tini.asc
+
+ENTRYPOINT ["/sbin/tini", "--"]

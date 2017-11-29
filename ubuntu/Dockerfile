@@ -26,7 +26,7 @@ ENV LANG=en_US.UTF-8 LANGUAGE=en_US:en LC_ALL=en_US.UTF-8
 # git config
 RUN git config --global pack.windowMemory "256m" && \
     git config --global pack.threads "1" && \
-    git config --global pack.packSizeLimit "256m"
+    git config --global repack.writeBitmaps true
 
 # install tini
 ENV TINI_VERSION v0.16.1

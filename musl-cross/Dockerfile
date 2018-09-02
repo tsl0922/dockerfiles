@@ -30,3 +30,5 @@ RUN git clone --depth=1 https://github.com/richfelker/musl-cross-make.git /tmp/m
     TARGET=mips-linux-musl make -C /tmp/musl-cross-make install && \
     TARGET=mipsel-linux-musl make -C /tmp/musl-cross-make install && \
     rm -rf /tmp/musl-cross-make && mv -f /bin/tar.bak /bin/tar
+
+ENV PATH="${PATH}:/opt/cross/bin"

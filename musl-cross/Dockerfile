@@ -22,11 +22,11 @@ RUN apt-get update && \
 COPY config.mak /tmp/config.mak
 RUN git clone --depth=1 https://github.com/richfelker/musl-cross-make.git /tmp/musl-cross-make && \
 	mv /tmp/config.mak /tmp/musl-cross-make/config.mak && \
+    TARGET=i386-linux-musl make -C /tmp/musl-cross-make install && \
     TARGET=x86_64-linux-musl make -C /tmp/musl-cross-make install && \
     TARGET=aarch64-linux-musl make -C /tmp/musl-cross-make install && \
     TARGET=arm-linux-musleabihf make -C /tmp/musl-cross-make install && \
     TARGET=arm-linux-musleabi make -C /tmp/musl-cross-make install && \
-    TARGET=i686-linux-musl make -C /tmp/musl-cross-make install && \
     TARGET=mips-linux-musl make -C /tmp/musl-cross-make install && \
     TARGET=mipsel-linux-musl make -C /tmp/musl-cross-make install && \
     rm -rf /tmp/musl-cross-make && mv -f /bin/tar.bak /bin/tar

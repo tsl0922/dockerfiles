@@ -11,6 +11,7 @@ RUN apt-get update && \
         curl \
         file \
         git \
+	libtool \
         pkg-config \
         sudo \
         unzip \

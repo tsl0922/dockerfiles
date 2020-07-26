@@ -7,13 +7,24 @@ on:
   pull_request:
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build Docker image
+        run: docker build musl-cross
+
   publish:
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    if: github.event_name == 'push'
 
-      - name: Build and push Docker images
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build and push Docker image
         uses: docker/build-push-action@v1
         with:
           path: musl-cross

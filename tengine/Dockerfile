@@ -12,10 +12,10 @@ RUN apt-get update \
 
 WORKDIR /usr/src/
 RUN curl -sLo- https://github.com/openresty/headers-more-nginx-module/archive/v0.33.tar.gz | tar zx \
-	&& curl -sLo- https://github.com/vozlt/nginx-module-vts/archive/v0.1.15.tar.gz | tar zx \
-	&& curl -sLo- http://tengine.taobao.org/download/tengine-2.2.2.tar.gz | tar zx \
-	&& curl -sLo- https://github.com/jemalloc/jemalloc/releases/download/5.1.0/jemalloc-5.1.0.tar.bz2 | tar jx
-RUN cd tengine-2.2.2 \
+	&& curl -sLo- https://github.com/vozlt/nginx-module-vts/archive/v0.1.18.tar.gz | tar zx \
+	&& curl -sLo- http://tengine.taobao.org/download/tengine-2.3.3.tar.gz | tar zx \
+	&& curl -sLo- https://github.com/jemalloc/jemalloc/releases/download/5.2.1/jemalloc-5.2.1.tar.bz2 | tar jx
+RUN cd tengine-2.3.3 \
 	&& ./configure \
 		--prefix=/etc/nginx \
 		--sbin-path=/usr/sbin/nginx \
@@ -38,12 +38,11 @@ RUN cd tengine-2.2.2 \
 		--with-file-aio \
 		--with-ipv6 \
 		--add-module=../headers-more-nginx-module-0.33 \
-		--add-module=../nginx-module-vts-0.1.15 \
-		--with-jemalloc=../jemalloc-5.1.0 \
-	&& make \
-	&& make install \
-	&& rm -rf /usr/src \
-	&& rm -rf /tmp/* \
+		--add-module=../nginx-module-vts-0.1.18 \
+		--with-jemalloc=../jemalloc-5.2.1 \
+	&& make && make install \
+	&& mkdir -p /var/cache/nginx \
+	&& rm -rf /usr/src /tmp/* \
 	&& apt-get purge -y --auto-remove \
 	&& apt-get clean all \
 	&& rm -rf /var/lib/apt/lists/*

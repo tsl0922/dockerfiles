@@ -11,11 +11,19 @@ RUN apt-get update \
 		zlib1g-dev
 
 WORKDIR /usr/src/
+
+RUN curl -sLo- https://github.com/openresty/luajit2/archive/refs/tags/v2.1-20211210.tar.gz | tar zx \
+	&& make PREFIX=/usr -C /usr/src/luajit2-2.1-20211210 amalg \
+	&& make PREFIX=/usr -C /usr/src/luajit2-2.1-20211210 install
+
 RUN curl -sLo- https://github.com/openresty/headers-more-nginx-module/archive/v0.33.tar.gz | tar zx \
 	&& curl -sLo- https://github.com/vozlt/nginx-module-vts/archive/v0.1.18.tar.gz | tar zx \
 	&& curl -sLo- http://tengine.taobao.org/download/tengine-2.3.3.tar.gz | tar zx \
 	&& curl -sLo- https://github.com/jemalloc/jemalloc/releases/download/5.2.1/jemalloc-5.2.1.tar.bz2 | tar jx
+
 RUN cd tengine-2.3.3 \
+	&& export LUAJIT_LIB=/usr/lib \
+	&& export LUAJIT_INC=/usr/include/luajit-2.1 \
 	&& ./configure \
 		--prefix=/etc/nginx \
 		--sbin-path=/usr/sbin/nginx \
@@ -35,6 +43,7 @@ RUN cd tengine-2.3.3 \
 		--with-http_ssl_module \
 		--with-http_sub_module \
 		--with-http_v2_module \
+		--with-http_lua_module \
 		--with-file-aio \
 		--with-ipv6 \
 		--add-module=../headers-more-nginx-module-0.33 \
